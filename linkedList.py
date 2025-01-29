@@ -95,17 +95,39 @@ class LinkedList:
             currentNode = currentNode.nextNode
             count += 1
         currentNode.nextNode = currentNode.nextNode.nextNode
-        
-        
-        
-        
+ 
     def printLinkedList(self):
         listHead = self.head
         
         if self.head is None:
             print("Linked list empty")
             return
+
         while listHead is not None:
             listHead.print()
             listHead = listHead.nextNode
+        print("None")
+
+    def getElement(self, index):
+        
+        if self.head is None:
+            return None
+        
+        if index >= self.length or index < -self.length :
+            raise IndexError
+        
+        currentNode = self.head
+        count = 0
+        
+        if index < 0:
+            index +=self.length
+            
+        while count < index:
+            count += 1
+            currentNode = currentNode.nextNode
+        
+        return currentNode.value
+        
+        
+        
             
