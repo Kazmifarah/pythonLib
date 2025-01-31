@@ -8,5 +8,5 @@ class Node:
         self.nextNode = None
         
     def print(self):
-        print(self.value)
+        print(self.value, end='->')
         

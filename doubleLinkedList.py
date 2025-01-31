@@ -1,9 +1,9 @@
-import node as N
+import dnode as D
 
-class LinkedList:
+class DoubleLinkedList:
     def __init__(self, value):
-        self.head = N.Node(value)
-        self.lastNode = self.head
+        self.head = D.DNode(value)
+        self.tail = self.head
     
     '''
     adds a new Node with specified value and a position
@@ -18,25 +18,29 @@ class LinkedList:
         length = self.length
         
         #case 1 : check if position provided is out of bounds
-        if position <-1 or position > length :
+        if position <-length or position > length :
             print("Add node : position", position, "provided is out of bounds")
             return
         
-        newNode = N.Node(value)
+        newNode = D.DNode(value)
         #case 2 : insert at the end
         if position==-1 or position == length:
-            self.lastNode.nextNode = newNode
-            self.lastNode = self.lastNode.nextNode
+            self.tail.nextNode = newNode
+            newNode.previousNode = self.tail
+            self.tail = newNode
             return
         
         #case 3 : insert at the start
         if position == 0:
             newNode.nextNode = self.head
+            self.head.previousNode = newNode
             self.head = newNode
             return
         
         currentNode=self.head
         count = 1
+        if position < 0:
+            position += length
         #case 4 : insert in middle
         #Traverse to the node just before the position
         while count < position :
@@ -44,9 +48,10 @@ class LinkedList:
             count += 1
             
         newNode.nextNode = currentNode.nextNode
+        newNode.nextNode.previousNode = newNode
         currentNode.nextNode = newNode
-        
-            
+        newNode.previousNode = currentNode
+
     '''
     returns length of a linked list
     '''
@@ -67,45 +72,62 @@ class LinkedList:
         if length == 0:
             print("Remove node : Linked list empty")
             return
-        
-        if position == -1:
-            position = length-1
             
         #case 2: check if position provided is out of bounds
         if position <-1 or position >= length :
             print("Remove node : position", position, "provided is out of bounds")
             return
         
+        if position < 0:
+            position += length
+
         #case 3: Remove the only node in linked list
         if length == 1:
-                self.lastNode = None
+                self.tail = None
                 self.head = None
                 return
             
         #case 4 : 1st node needs to be removed
         currentNode = self.head
         if position == 0:
-            self.head=currentNode.nextNode
+            currentNode = currentNode.nextNode
+            self.head=currentNode
+            currentNode.previousNode = None
+            return
+
+        #case 5 : last node needs to be removed
+        if position == length-1:
+            lastNode = self.tail
+            lastNode = lastNode.previousNode
+            lastNode.nextNode = None
+            self.tail = lastNode
             return
             
-        #case 5 : remove currentNode from middle
+        #case 6 : remove currentNode from middle
         #Traverse to node previous to position
         count=1
         while count < position :
             currentNode = currentNode.nextNode
             count += 1
         currentNode.nextNode = currentNode.nextNode.nextNode
+        currentNode.nextNode.previousNode = currentNode
  
-    def printLinkedList(self):
-        listHead = self.head
+    def printLinkedList(self, reverse = False):
         
         if self.head is None:
             print("Linked list empty")
             return
-
-        while listHead is not None:
-            listHead.print()
-            listHead = listHead.nextNode
+        
+        if reverse :
+            listTail = self.tail
+            while listTail is not None :
+                listTail.print()
+                listTail = listTail.previousNode   
+        else :
+            listHead = self.head
+            while listHead is not None:
+                listHead.print()
+                listHead = listHead.nextNode
         print("None")
 
     def getElement(self, index):
@@ -114,17 +136,28 @@ class LinkedList:
             return None
         
         if index >= self.length or index < -self.length :
-            raise IndexError
-        
-        currentNode = self.head
-        count = 0
+            return None
         
         if index < 0:
             index +=self.length
+
+        if index < self.length/2:
+            currentNode = self.head
+            count = 0
             
-        while count < index:
-            count += 1
-            currentNode = currentNode.nextNode
+            while count < index:
+                print("count+", count)
+                count += 1
+                currentNode = currentNode.nextNode
+        
+        else :
+            currentNode = self.tail
+            count = self.length -1
+            
+            while count > index:
+                print("count-", count)
+                count -= 1
+                currentNode = currentNode.previousNode
         
         return currentNode.value
         
